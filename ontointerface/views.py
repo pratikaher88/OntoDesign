@@ -11,6 +11,8 @@ from itertools import chain
 
 from owlready2 import *
 
+
+
 switcher = {
     'Neuraldata': NeuroData,
 }
@@ -52,8 +54,15 @@ class SparqlQueries:
     def __init__(self):
         my_world = World()
         # path to the owl file is given here
-        my_world.get_ontology(
-            "/Users/pratikaher/ontologies/Owl-Ontology/trail.owl").load()
+        try:
+            my_world.get_ontology(
+            "/Users/pratikaher/ontologies/FINAL/3.7.20(with Inference).owl").load()
+        except:
+            my_world.get_ontology(
+            "/Users/pratikaher/ontologies/FINAL/3.7.20(with Inference).owl").load()
+
+        # my_world.get_ontology(
+        #     "/Users/pratikaher/ontologies/FINAL/3.7.20(with Inference).owl").load()
         sync_reasoner(my_world)  # reasoner is started and synchronized here
         self.graph = my_world.as_rdflib_graph()
 
@@ -63,22 +72,40 @@ class SparqlQueries:
 
 def query_output():
 
-    query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "\
-            "ask { "\
-            "?isManagedBy rdfs:domain ?A ." \
-            "?isManagedBy rdfs:range ?B " \
+    # query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "\
+    #         "ask { "\
+    #         "?isManagedBy rdfs:domain ?A ." \
+    #         "?isManagedBy rdfs:range ?B " \
+    #         "}"
+    
+    query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "\
+            "PREFIX owl: <http://www.w3.org/2002/07/owl#>"\
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"\
+            "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>"\
+            "ASK{"\
+            "select ?domain ?property ?range  where {"\
+            "  ?property rdfs:domain ?domain ;"\
+            "            rdfs:range ?range ."\
+            "FILTER (regex(str(?domain), \"Inquirer\"))"\
+            "FILTER (regex(str(?property), \"canAccessCardio\"))"\
+            "FILTER (regex(str(?property), \"Cardio\"))"\
+            "}"\
             "}"
     
+
+
+
     # query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> "\
     #         "SELECT DISTINCT ?p "\
     #         "WHERE {?p a owl:ObjectProperty}"
 
     runQuery = SparqlQueries()
+    
     response = runQuery.search(query)
 
     resultsList= list(response)[0]
 
-    # print(resultsList)
+    print(resultsList)
 
     return resultsList
     
